@@ -6,6 +6,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
 
   const navigateToScreen = (screen: string) => {
+    // @ts-ignore
     navigation.navigate(screen);
   };
 
