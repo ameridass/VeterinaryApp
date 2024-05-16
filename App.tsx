@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import DewormingRecords from "./components/DewormingRecords";
-import OwnerManagement from "./components/OwnerManagement";
+import OwnerManagementScreen from "./screens/OwnerManagementScreen";
 import AppointmentManagementScreen from "./screens/AppointmentManagementScreen";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import HomeScreen from "./screens/HomeScreen";
@@ -18,7 +18,7 @@ function DrawerNavigator() {
     <Drawer.Navigator initialRouteName="Home">
       <Drawer.Screen name="Inicio" component={HomeScreen} />
       <Drawer.Screen name="Gestión de Citas" component={AppointmentManagementScreen} />
-      <Drawer.Screen name="Administración de Dueños" component={OwnerManagement} />
+      <Drawer.Screen name="Administración de Dueños" component={OwnerManagementScreen} />
       <Drawer.Screen name="Administración de Fichas de Desparasitación" component={DewormingRecords} />
     </Drawer.Navigator>
   );
