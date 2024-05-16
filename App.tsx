@@ -8,6 +8,7 @@ import OwnerManagementScreen from "./screens/OwnerManagementScreen";
 import AppointmentManagementScreen from "./screens/AppointmentManagementScreen";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import HomeScreen from "./screens/HomeScreen";
+import LogoutButton from "./components/LogoutButton/LogoutButton";
 
 
 const Stack = createNativeStackNavigator();
@@ -20,6 +21,7 @@ function DrawerNavigator() {
       <Drawer.Screen name="Gestión de Citas" component={AppointmentManagementScreen} />
       <Drawer.Screen name="Administración de Dueños" component={OwnerManagementScreen} />
       <Drawer.Screen name="Administración de Fichas de Desparasitación" component={DewormingRecordsScreen} />
+      <Drawer.Screen name="Cerrar Sesión" component={LogoutButton} />
     </Drawer.Navigator>
   );
 }
