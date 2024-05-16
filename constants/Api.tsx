@@ -4,5 +4,6 @@ export const API = {
     citas: '/citas/',
     duenos: '/duenos/',
     desparasitaciones: '/desparacitaciones/',
+    mascotas: '/mascotas/',
   }
 }
