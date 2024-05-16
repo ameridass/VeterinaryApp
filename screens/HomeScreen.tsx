@@ -8,6 +8,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const [mascotas, setMascotas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [avatars, setAvatars] = useState<string[]>([]);
   const avatarUrl = 'https://via.placeholder.com/150'; // URL de la imagen del avatar
 
   useEffect(() => {
@@ -20,13 +21,27 @@ const HomeScreen = () => {
           setMascotas(data);
         } catch (error) {
           console.error('Error fetching mascotas:', error);
-        } finally {
-          setLoading(false);
         }
       }
     };
 
-    fetchMascotas();
+    const fetchAvatarImages = async () => {
+      try {
+        const avatarPromises = mascotas.map(() =>
+          fetch('https://api.thedogapi.com/v1/images/search')
+            .then(response => response.json())
+            .then(data => data[0].url)
+        );
+        const avatarUrls = await Promise.all(avatarPromises);
+        setAvatars(avatarUrls);
+      } catch (error) {
+        console.error('Error fetching avatar images:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMascotas().then(fetchAvatarImages);
   }, []);
 
   const navigateToScreen = (screen: string) => {
@@ -45,18 +60,18 @@ const HomeScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Welcome to PetPal!</Text>
+        <Text style={styles.header}>Bienvenido a Mascota Feliz!</Text>
         <Image
           source={{ uri: avatarUrl }}
           style={styles.profileImage}
         />
       </View>
-      <Text style={styles.subHeader}>Pet Profile</Text>
+      <Text style={styles.subHeader}>Mascotas</Text>
       <View style={styles.petsContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {mascotas.map((mascota: any) => (
+          {mascotas.map((mascota: any, index: number) => (
             <View key={mascota.id} style={styles.petCard}>
-              <Image source={{ uri: 'https://via.placeholder.com/50' }} style={styles.petImage} />
+              <Image source={{ uri: avatars[index] }} style={styles.petImage} />
               <Text style={styles.petName}>{mascota.nombre}</Text>
             </View>
           ))}
