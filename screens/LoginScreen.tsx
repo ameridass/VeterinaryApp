@@ -20,6 +20,10 @@ const LoginScreen = ({ navigation }) => {
     }
 
     try {
+      if(email === '' ) {
+        setError('Debe de completar todos los campos')
+        return;
+      }
       const response = await fetch(API.url_dev + endpoint, {
         method: 'POST',
         headers: {
