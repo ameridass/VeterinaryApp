@@ -9,39 +9,38 @@ const HomeScreen = () => {
   const [mascotas, setMascotas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [avatars, setAvatars] = useState<string[]>([]);
-  const avatarUrl = 'https://via.placeholder.com/150'; // URL de la imagen del avatar
+  const [userType, setUserType] = useState<string | null>(null);
+  const avatarUrl = 'https://via.placeholder.com/150';
 
   useEffect(() => {
-    const fetchMascotas = async () => {
+    const fetchUserData = async () => {
+      const storedUserType = await AsyncStorage.getItem('userType');
+      setUserType(storedUserType);
+      console.log('Stored user type:', storedUserType);
+
       const userId = await AsyncStorage.getItem('userId');
       if (userId) {
         try {
           const response = await fetch(`${API.url_dev}${API.endpoint.duenos}${userId}${API.endpoint.mascotas}`);
           const data = await response.json();
           setMascotas(data);
+
+          const avatarPromises = data.map(() =>
+            fetch('https://api.thedogapi.com/v1/images/search')
+              .then(response => response.json())
+              .then(data => data[0].url)
+          );
+          const avatarUrls = await Promise.all(avatarPromises);
+          setAvatars(avatarUrls);
         } catch (error) {
-          console.error('Error fetching mascotas:', error);
+          console.error('Error fetching mascotas or avatar images:', error);
+        } finally {
+          setLoading(false);
         }
       }
     };
 
-    const fetchAvatarImages = async () => {
-      try {
-        const avatarPromises = mascotas.map(() =>
-          fetch('https://api.thedogapi.com/v1/images/search')
-            .then(response => response.json())
-            .then(data => data[0].url)
-        );
-        const avatarUrls = await Promise.all(avatarPromises);
-        setAvatars(avatarUrls);
-      } catch (error) {
-        console.error('Error fetching avatar images:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMascotas().then(fetchAvatarImages);
+    fetchUserData();
   }, []);
 
   const navigateToScreen = (screen: string) => {
@@ -84,9 +83,11 @@ const HomeScreen = () => {
         <TouchableOpacity onPress={() => navigateToScreen('Gestión de Citas')} style={styles.menuItem}>
           <Text style={styles.menuItemText}>Gestión de Citas</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateToScreen('Administración de Dueños')} style={styles.menuItem}>
-          <Text style={styles.menuItemText}>Administración de Dueños</Text>
-        </TouchableOpacity>
+        {userType !== 'user' && (
+          <TouchableOpacity onPress={() => navigateToScreen('Administración de Dueños')} style={styles.menuItem}>
+            <Text style={styles.menuItemText}>Administración de Dueños</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={() => navigateToScreen('Administración de Fichas de Desparasitación')} style={styles.menuItem}>
           <Text style={styles.menuItemText}>Fichas de Desparasitación</Text>
         </TouchableOpacity>
