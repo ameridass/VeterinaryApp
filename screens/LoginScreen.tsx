@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
 import {View, TextInput, Button, StyleSheet, Text} from 'react-native';
 
+// @ts-ignore
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
     console.log('Login with:', email, password);
-    navigation.navigate('Register');
+    navigation.navigate('Main');
   };
 
   return (
