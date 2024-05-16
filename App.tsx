@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
-import DewormingRecords from "./components/DewormingRecords";
+import DewormingRecordsScreen from "./screens/DewormingRecordsScreen";
 import OwnerManagementScreen from "./screens/OwnerManagementScreen";
 import AppointmentManagementScreen from "./screens/AppointmentManagementScreen";
 import {createDrawerNavigator} from "@react-navigation/drawer";
@@ -19,7 +19,7 @@ function DrawerNavigator() {
       <Drawer.Screen name="Inicio" component={HomeScreen} />
       <Drawer.Screen name="Gestión de Citas" component={AppointmentManagementScreen} />
       <Drawer.Screen name="Administración de Dueños" component={OwnerManagementScreen} />
-      <Drawer.Screen name="Administración de Fichas de Desparasitación" component={DewormingRecords} />
+      <Drawer.Screen name="Administración de Fichas de Desparasitación" component={DewormingRecordsScreen} />
     </Drawer.Navigator>
   );
 }

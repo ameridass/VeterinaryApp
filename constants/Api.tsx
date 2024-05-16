@@ -3,5 +3,6 @@ export const API = {
   endpoint: {
     citas: '/citas/',
     duenos: '/duenos/',
+    desparasitaciones: '/desparacitaciones/',
   }
 }
