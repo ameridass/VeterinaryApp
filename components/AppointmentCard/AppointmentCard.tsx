@@ -1,14 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-interface Appointment {
-  fecha_hora: string;
-  observaciones: string;
-  paciente: string;
-  empleado: string;
-  estado: string;
-}
+import {Appointment} from "../../constants/Types";
 
 interface AppointmentCardProps {
   appointment: Appointment;

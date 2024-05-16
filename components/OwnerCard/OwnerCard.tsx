@@ -1,15 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {Owner} from "../../constants/Types";
 
-export interface Owner {
-  id: string;
-  nombre: string;
-  direccion: string;
-  telefono: string;
-  email: string;
-  estado: number;
-}
 
 export interface OwnerCardProps {
   owner: Owner;

@@ -1,19 +1,10 @@
-// src/screens/AppointmentManagement.js
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, Alert, Modal } from 'react-native';
 import { API } from '../constants/Api';
 import AppointmentCard from '../components/AppointmentCard/AppointmentCard';
 import AppointmentForm from '../components/AppointmentForm/AppointmentForm';
-
-interface Appointment {
-  id: string;
-  fecha_hora: string;
-  observaciones: string;
-  paciente: string;
-  empleado: string;
-  estado: string;
-}
+import CreateButton from '../components/CreateButton/CreateButton';
+import {Appointment} from "../constants/Types";
 
 const AppointmentManagement = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -72,7 +63,7 @@ const AppointmentManagement = () => {
   const handleDelete = (appointment: Appointment) => {
     Alert.alert(
       'Eliminar',
-      `¿Estás seguro de que deseas eliminar la cita con el paciente: ${appointment.paciente}?`,
+      `¿Estás seguro de que deseas eliminar la cita del paciente ${appointment.paciente}?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'OK', onPress: () => deleteAppointment(appointment) },
@@ -97,6 +88,10 @@ const AppointmentManagement = () => {
     }
   };
 
+  const handleCreate = (newAppointment: Appointment) => {
+    setAppointments((prevAppointments) => [newAppointment, ...prevAppointments]);
+  };
+
   const renderItem = ({ item }: { item: Appointment }) => (
     <AppointmentCard
       appointment={item}
@@ -108,13 +103,14 @@ const AppointmentManagement = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Gestión de Citas</Text>
+      <CreateButton type="appointment" onCreate={handleCreate} />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <FlatList
           data={appointments}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
         />
       )}
       {selectedAppointment && (

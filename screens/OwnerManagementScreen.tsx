@@ -3,15 +3,8 @@ import { View, Text, StyleSheet, ActivityIndicator, FlatList, Alert, Modal } fro
 import { API } from '../constants/Api';
 import OwnerCard from '../components/OwnerCard/OwnerCard';
 import OwnerForm from '../components/OwnerForm/OwnerForm';
-
-interface Owner {
-  id: string;
-  nombre: string;
-  direccion: string;
-  telefono: string;
-  email: string;
-  estado: number;
-}
+import CreateButton from '../components/CreateButton/CreateButton';
+import {Owner} from "../constants/Types";
 
 const OwnerManagementScreen = () => {
   const [owners, setOwners] = useState<Owner[]>([]);
@@ -25,7 +18,7 @@ const OwnerManagementScreen = () => {
 
   const fetchOwners = async () => {
     try {
-      const response = await fetch(API.url_dev + API.endpoint.duenos); // Asegúrate de que esta URL es correcta
+      const response = await fetch(API.url_dev + API.endpoint.duenos);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -95,6 +88,10 @@ const OwnerManagementScreen = () => {
     }
   };
 
+  const handleCreate = (newOwner: Owner) => {
+    setOwners((prevOwners) => [newOwner, ...prevOwners]);
+  };
+
   const renderItem = ({ item }: { item: Owner }) => (
     <OwnerCard
       owner={item}
@@ -106,13 +103,14 @@ const OwnerManagementScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Gestión de Dueños</Text>
+      <CreateButton type="owner" onCreate={handleCreate} />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <FlatList
           data={owners}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
         />
       )}
       {selectedOwner && (

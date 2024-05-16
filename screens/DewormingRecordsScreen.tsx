@@ -2,19 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, Alert, Modal } from 'react-native';
 import { API } from '../constants/Api';
 import DewormingRecordForm from '../components/DewormingRecordForm/DewormingRecordForm';
+import CreateButton from '../components/CreateButton/CreateButton';
+import {DewormingRecord} from "../constants/Types";
 import DewormingRecordCard from "../components/DewormingRecordCard/DewormingRecordCars";
 
-interface DewormingRecord {
-  id: string;
-  fecha: string;
-  motivo: string;
-  diagnostico: string;
-  tratamiento: string;
-  paciente: number;
-  empleado: number;
-  sala: number;
-  estado: number;
-}
 
 const DewormingRecordsScreen = () => {
   const [records, setRecords] = useState<DewormingRecord[]>([]);
@@ -28,7 +19,7 @@ const DewormingRecordsScreen = () => {
 
   const fetchRecords = async () => {
     try {
-      const response = await fetch(API.url_dev + API.endpoint.desparasitaciones); // Asegúrate de que esta URL es correcta
+      const response = await fetch(API.url_dev + API.endpoint.desparasitaciones);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -98,6 +89,10 @@ const DewormingRecordsScreen = () => {
     }
   };
 
+  const handleCreate = (newRecord: DewormingRecord) => {
+    setRecords((prevRecords) => [newRecord, ...prevRecords]);
+  };
+
   const renderItem = ({ item }: { item: DewormingRecord }) => (
     <DewormingRecordCard
       record={item}
@@ -109,13 +104,14 @@ const DewormingRecordsScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Administración de Fichas de Desparasitación</Text>
+      <CreateButton type="deworming" onCreate={handleCreate} />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <FlatList
           data={records}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
         />
       )}
       {selectedRecord && (

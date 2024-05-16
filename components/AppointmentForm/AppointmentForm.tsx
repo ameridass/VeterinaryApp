@@ -1,16 +1,7 @@
-// src/components/AppointmentForm/AppointmentForm.js
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import {Appointment} from "../AppointmentCard/AppointmentCard";
 
-interface Appointment {
-  id: string;
-  fecha_hora: string;
-  observaciones: string;
-  paciente: string;
-  empleado: string;
-  estado: string;
-}
 
 interface AppointmentFormProps {
   appointment: Appointment;

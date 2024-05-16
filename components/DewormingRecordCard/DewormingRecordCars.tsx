@@ -1,18 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {DewormingRecord} from "../../constants/Types";
 
-export interface DewormingRecord {
-  id: string;
-  fecha: string;
-  motivo: string;
-  diagnostico: string;
-  tratamiento: string;
-  paciente: number;
-  empleado: number;
-  sala: number;
-  estado: number;
-}
 
 interface DewormingRecordCardProps {
   record: DewormingRecord;
