@@ -4,21 +4,41 @@ import { API } from '../constants/Api';
 import AppointmentCard from '../components/AppointmentCard/AppointmentCard';
 import AppointmentForm from '../components/AppointmentForm/AppointmentForm';
 import CreateButton from '../components/CreateButton/CreateButton';
-import {Appointment} from "../constants/Types";
+import { Appointment } from '../constants/Types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AppointmentManagement = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [userType, setUserType] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchAppointments();
+    const fetchUserData = async () => {
+      const storedUserType = await AsyncStorage.getItem('userType');
+      setUserType(storedUserType);
+    };
+
+    fetchUserData();
   }, []);
+
+  useEffect(() => {
+    if (userType) {
+      fetchAppointments();
+    }
+  }, [userType]);
 
   const fetchAppointments = async () => {
     try {
-      const response = await fetch(API.url_dev + API.endpoint.citas);
+      const userId = await AsyncStorage.getItem('userId');
+      let endpoint = '';
+      if (userType === 'user') {
+        endpoint = `${API.endpoint.citas}citas_por_propietario/?propietario_id=${userId}`;
+      } else if (userType === 'collaborator') {
+        endpoint = API.endpoint.citas;
+      }
+      const response = await fetch(API.url_dev + endpoint);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

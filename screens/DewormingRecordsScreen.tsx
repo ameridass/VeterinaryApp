@@ -5,6 +5,7 @@ import DewormingRecordForm from '../components/DewormingRecordForm/DewormingReco
 import CreateButton from '../components/CreateButton/CreateButton';
 import {DewormingRecord} from "../constants/Types";
 import DewormingRecordCard from "../components/DewormingRecordCard/DewormingRecordCars";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const DewormingRecordsScreen = () => {
@@ -12,14 +13,32 @@ const DewormingRecordsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [selectedRecord, setSelectedRecord] = useState<DewormingRecord | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [userType, setUserType] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchRecords();
+    const fetchUserData = async () => {
+      const storedUserType = await AsyncStorage.getItem('userType');
+      setUserType(storedUserType);
+    };
+    fetchUserData();
   }, []);
+
+    useEffect(() => {
+      if (userType) {
+        fetchRecords();
+      }
+    }, [userType]);
 
   const fetchRecords = async () => {
     try {
-      const response = await fetch(API.url_dev + API.endpoint.desparasitaciones);
+      const userId = await AsyncStorage.getItem('userId');
+      let endpoint = '';
+        if (userType === 'user') {
+            endpoint = `${API.endpoint.desparasitaciones}consultas_por_propietario/?propietario_id=${userId}`;
+        } else if (userType === 'collaborator') {
+            endpoint = API.endpoint.desparasitaciones;
+        }
+      const response = await fetch(API.url_dev + endpoint);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
