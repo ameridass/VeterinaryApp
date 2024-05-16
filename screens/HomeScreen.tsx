@@ -16,27 +16,32 @@ const HomeScreen = () => {
     const fetchUserData = async () => {
       const storedUserType = await AsyncStorage.getItem('userType');
       setUserType(storedUserType);
-      console.log('Stored user type:', storedUserType);
 
-      const userId = await AsyncStorage.getItem('userId');
-      if (userId) {
-        try {
-          const response = await fetch(`${API.url_dev}${API.endpoint.duenos}${userId}${API.endpoint.mascotas}`);
-          const data = await response.json();
-          setMascotas(data);
+      if (storedUserType !== 'collaborator') {
+        const userId = await AsyncStorage.getItem('userId');
+        if (userId) {
+          try {
+            const response = await fetch(`${API.url_dev}${API.endpoint.duenos}${userId}${API.endpoint.mascotas}`);
+            const data = await response.json();
+            setMascotas(data);
 
-          const avatarPromises = data.map(() =>
-            fetch('https://api.thedogapi.com/v1/images/search')
-              .then(response => response.json())
-              .then(data => data[0].url)
-          );
-          const avatarUrls = await Promise.all(avatarPromises);
-          setAvatars(avatarUrls);
-        } catch (error) {
-          console.error('Error fetching mascotas or avatar images:', error);
-        } finally {
+            const avatarPromises = data.map(() =>
+              fetch('https://api.thedogapi.com/v1/images/search')
+                .then(response => response.json())
+                .then(data => data[0].url)
+            );
+            const avatarUrls = await Promise.all(avatarPromises);
+            setAvatars(avatarUrls);
+          } catch (error) {
+            console.error('Error fetching mascotas or avatar images:', error);
+          } finally {
+            setLoading(false);
+          }
+        } else {
           setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
     };
 
@@ -58,27 +63,31 @@ const HomeScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>Bienvenido a Mascota Feliz!</Text>
-        <Image
-          source={{ uri: avatarUrl }}
-          style={styles.profileImage}
-        />
-      </View>
-      <Text style={styles.subHeader}>Mascotas</Text>
-      <View style={styles.petsContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {mascotas.map((mascota: any, index: number) => (
-            <View key={mascota.id} style={styles.petCard}>
-              <Image source={{ uri: avatars[index] }} style={styles.petImage} />
-              <Text style={styles.petName}>{mascota.nombre}</Text>
-            </View>
-          ))}
-          <TouchableOpacity style={styles.addPetButton}>
-            <Text style={styles.addPetText}>+</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
+      {userType !== 'collaborator' && (
+        <>
+          <View style={styles.headerContainer}>
+            <Text style={styles.header}>Bienvenido a Mascota Feliz!</Text>
+            <Image
+              source={{ uri: avatarUrl }}
+              style={styles.profileImage}
+            />
+          </View>
+          <Text style={styles.subHeader}>Mascotas</Text>
+          <View style={styles.petsContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {mascotas.map((mascota: any, index: number) => (
+                <View key={mascota.id} style={styles.petCard}>
+                  <Image source={{ uri: avatars[index] }} style={styles.petImage} />
+                  <Text style={styles.petName}>{mascota.nombre}</Text>
+                </View>
+              ))}
+              <TouchableOpacity style={styles.addPetButton}>
+                <Text style={styles.addPetText}>+</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </>
+      )}
       <View style={styles.menuContainer}>
         <TouchableOpacity onPress={() => navigateToScreen('Gestión de Citas')} style={styles.menuItem}>
           <Text style={styles.menuItemText}>Gestión de Citas</Text>

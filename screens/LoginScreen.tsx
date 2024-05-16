@@ -16,7 +16,9 @@ const LoginScreen = ({ navigation }) => {
     if (userType === 'user') {
       endpoint = API.endpoint.duenos+'login/';
     } else if (userType === 'collaborator') {
-      endpoint = 'API_ENDPOINT_FOR_COLLABORATOR';
+      await AsyncStorage.setItem('userType', userType);
+      navigation.navigate('Main');
+      return;
     }
 
     try {
@@ -36,7 +38,6 @@ const LoginScreen = ({ navigation }) => {
 
       if (data) {
         console.log('Login successful:', data.mensaje);
-        // Store user type and user ID in AsyncStorage
         await AsyncStorage.setItem('userType', userType);
         await AsyncStorage.setItem('userId', data.id.toString());
 
