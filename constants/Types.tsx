@@ -33,3 +33,14 @@ export const buttonTitles = {
     appointment: 'Cita',
     deworming: 'Desparasitación',
 }
+
+export interface Pet {
+    id?: string;
+    nombre: string;
+    especie: string;
+    raza: string;
+    fecha_nacimiento: string;
+    historial_medico: string;
+    propietario: number;
+    estado: number;
+}
