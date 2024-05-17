@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIn
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API } from "../constants/Api";
+import EditPetModal from "../components/EditPetModal/EditPetModal";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -10,43 +11,66 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
   const [avatars, setAvatars] = useState<string[]>([]);
   const [userType, setUserType] = useState<string | null>(null);
+  const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const avatarUrl = 'https://via.placeholder.com/150';
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const storedUserType = await AsyncStorage.getItem('userType');
-      setUserType(storedUserType);
+  const fetchUserData = async () => {
+    const storedUserType = await AsyncStorage.getItem('userType');
+    setUserType(storedUserType);
 
-      if (storedUserType !== 'collaborator') {
-        const userId = await AsyncStorage.getItem('userId');
-        if (userId) {
-          try {
-            const response = await fetch(`${API.url_dev}${API.endpoint.duenos}${userId}${API.endpoint.mascotas}`);
-            const data = await response.json();
-            setMascotas(data);
+    if (storedUserType !== 'collaborator') {
+      const userId = await AsyncStorage.getItem('userId');
+      if (userId) {
+        try {
+          const response = await fetch(`${API.url_dev}${API.endpoint.duenos}${userId}${API.endpoint.mascotas}`);
+          const data = await response.json();
+          setMascotas(data);
 
-            const avatarPromises = data.map(() =>
-              fetch('https://api.thedogapi.com/v1/images/search')
-                .then(response => response.json())
-                .then(data => data[0].url)
-            );
-            const avatarUrls = await Promise.all(avatarPromises);
-            setAvatars(avatarUrls);
-          } catch (error) {
-            console.error('Error fetching mascotas or avatar images:', error);
-          } finally {
-            setLoading(false);
-          }
-        } else {
+          const avatarPromises = data.map(() =>
+            fetch('https://api.thedogapi.com/v1/images/search')
+              .then(response => response.json())
+              .then(data => data[0].url)
+          );
+          const avatarUrls = await Promise.all(avatarPromises);
+          setAvatars(avatarUrls);
+        } catch (error) {
+          console.error('Error fetching mascotas or avatar images:', error);
+        } finally {
           setLoading(false);
         }
       } else {
         setLoading(false);
       }
-    };
+    } else {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUserData();
   }, []);
+
+  const handlePetPress = (petId: number) => {
+    setSelectedPetId(petId);
+    setIsModalVisible(true);
+  };
+
+  const handleAddPet = () => {
+    setSelectedPetId(null);
+    setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+    setSelectedPetId(null);
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    await fetchUserData();
+    setLoading(false);
+  };
 
   const navigateToScreen = (screen: string) => {
     // @ts-ignore
@@ -76,12 +100,14 @@ const HomeScreen = () => {
           <View style={styles.petsContainer}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {mascotas.map((mascota: any, index: number) => (
-                <View key={mascota.id} style={styles.petCard}>
-                  <Image source={{ uri: avatars[index] }} style={styles.petImage} />
-                  <Text style={styles.petName}>{mascota.nombre}</Text>
-                </View>
+                <TouchableOpacity key={mascota.id} onPress={() => handlePetPress(mascota.id)}>
+                  <View style={styles.petCard}>
+                    <Image source={{ uri: avatars[index] }} style={styles.petImage} />
+                    <Text style={styles.petName}>{mascota.nombre}</Text>
+                  </View>
+                </TouchableOpacity>
               ))}
-              <TouchableOpacity style={styles.addPetButton}>
+              <TouchableOpacity style={styles.addPetButton} onPress={handleAddPet}>
                 <Text style={styles.addPetText}>+</Text>
               </TouchableOpacity>
             </ScrollView>
@@ -101,6 +127,14 @@ const HomeScreen = () => {
           <Text style={styles.menuItemText}>Fichas de Desparasitación</Text>
         </TouchableOpacity>
       </View>
+      {isModalVisible && (
+        <EditPetModal
+          visible={isModalVisible}
+          onClose={closeModal}
+          petId={selectedPetId}
+          onSave={handleSave}
+        />
+      )}
     </ScrollView>
   );
 };
