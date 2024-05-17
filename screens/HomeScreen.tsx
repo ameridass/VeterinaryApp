@@ -13,6 +13,7 @@ const HomeScreen = () => {
   const [userType, setUserType] = useState<string | null>(null);
   const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [ownerId, setOwnerId] = useState<string | null>(null);
   const avatarUrl = 'https://via.placeholder.com/150';
 
   const fetchUserData = async () => {
@@ -21,6 +22,7 @@ const HomeScreen = () => {
 
     if (storedUserType !== 'collaborator') {
       const userId = await AsyncStorage.getItem('userId');
+      setOwnerId(userId);
       if (userId) {
         try {
           const response = await fetch(`${API.url_dev}${API.endpoint.duenos}${userId}${API.endpoint.mascotas}`);
@@ -133,6 +135,7 @@ const HomeScreen = () => {
           onClose={closeModal}
           petId={selectedPetId}
           onSave={handleSave}
+          ownerId={ownerId}
         />
       )}
     </ScrollView>
