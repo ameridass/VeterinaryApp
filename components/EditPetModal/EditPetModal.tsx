@@ -1,16 +1,17 @@
-// EditPetModal.tsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, ActivityIndicator, Alert } from 'react-native';
 import {API} from "../../constants/Api";
 
 // @ts-ignore
-const EditPetModal = ({ visible, onClose, petId, onSave }) => {
+const EditPetModal = ({ visible, onClose, petId, onSave, ownerId }) => {
   const [petDetails, setPetDetails] = useState({
     nombre: '',
     especie: '',
     raza: '',
     fecha_nacimiento: '',
-    historial_medico: ''
+    historial_medico: '',
+    propietario: ownerId,
+    estado: 1,
   });
   const [loading, setLoading] = useState(true);
 
